@@ -1,10 +1,9 @@
 import streamlit as st
 import openai
+import os
 
-# Make sure to set your API key as an environment variable before running:
-# export OPENAI_API_KEY="your_api_key"
-
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Get API key from environment variable (works on Render)
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 st.title("Super Translator 🔤")
 st.write("Type an English word/phrase and get its definition, synonyms, and Russian translation.")
@@ -32,4 +31,5 @@ if word:
     answer = response["choices"][0]["message"]["content"]
 
     st.text_area("Result:", answer, height=200)
+
 
