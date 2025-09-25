@@ -1,35 +1,32 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 import os
 
-# Get API key from environment variable (works on Render)
-openai.api_key = os.environ["OPENAI_API_KEY"]
+# Initialize OpenAI client
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-st.title("Super Translator 🔤")
-st.write("Type an English word/phrase and get its definition, synonyms, and Russian translation.")
+st.title("English → Definition, Synonyms & Russian Translator")
 
-word = st.text_input("Enter an English word/phrase:")
+# User input
+word = st.text_input("Enter an English word or phrase:")
 
 if word:
-    prompt = f"""
-    For the word/phrase "{word}", provide:
-    1. A clear English definition (1-2 sentences).
-    2. 3-5 synonyms in English.
-    3. The Russian translation.
-    Format your answer as:
-    Definition: ...
-    Synonyms: ...
-    Translation (RU): ...
-    """
+    with st.spinner("Thinking..."):
+        # Prompt to get definition, synonyms, and Russian translation
+        prompt = f"""
+        Provide the following for the English word/phrase: "{word}"
+        1. Definition in English
+        2. Synonyms
+        3. Translation to Russian
+        """
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0
-    )
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0
+        )
 
-    answer = response["choices"][0]["message"]["content"]
+        answer = response.choices[0].message.content
 
-    st.text_area("Result:", answer, height=200)
-
-
+    st.subheader("Result:")
+    st.write(answer)
